@@ -19,7 +19,7 @@ export function Home() {
 
       <View style={styles.content}>
         <Filter status={FilterStatus.DONE} isActive />
-        <Filter status={FilterStatus.PENDINGgit config --global user.email} isActive={false} />
+        <Filter status={FilterStatus.PENDING} isActive={false} />
       </View>
     </View>
   );
