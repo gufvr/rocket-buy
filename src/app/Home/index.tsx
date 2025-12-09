@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react"
 import {
   View,
   Image,
@@ -6,34 +6,52 @@ import {
   Text,
   FlatList,
   Alert,
-} from "react-native";
+} from "react-native"
 
-import { Button } from "@/components/Button";
-import { Input } from "@/components/Input";
-import { Filter } from "@/components/Filter";
-import { Item } from "@/components/Item";
+import { Button } from "@/components/Button"
+import { Input } from "@/components/Input"
+import { Filter } from "@/components/Filter"
+import { Item } from "@/components/Item"
 
-import { styles } from "./styles";
-import { FilterStatus } from "@/types/FilterStatus";
+import { styles } from "./styles"
+import { FilterStatus } from "@/types/FilterStatus"
+import { itemsStorage, ItemStorage } from "@/storage/itemsStorage"
 
-const FILTER_STATUS: FilterStatus[] = [FilterStatus.DONE, FilterStatus.PENDING];
+const FILTER_STATUS: FilterStatus[] = [FilterStatus.DONE, FilterStatus.PENDING]
 
 export function Home() {
-  const [filter, setFilter] = useState(FilterStatus.PENDING);
-  const [description, setDescription] = useState("");
-  const [items, setItems] = useState<any>([]);
+  const [filter, setFilter] = useState(FilterStatus.PENDING)
+  const [description, setDescription] = useState("")
+  const [items, setItems] = useState<ItemStorage[]>([])
 
-  function handleAddItem() {
+  async function handleAdd() {
     if (!description.trim()) {
-      return Alert.alert("Adicionar", "Informe a descrição do item.");
+      return Alert.alert("Adicionar", "Informe a descrição do item.")
     }
 
     const newItem = {
       id: Math.random().toString(36).substring(2),
       description,
       status: FilterStatus.PENDING,
-    };
+    }
+
+    await itemsStorage.add(newItem)
+    await getItems()
   }
+
+  async function getItems() {
+    try {
+      const response = await itemsStorage.get()
+      setItems(response)
+    } catch (error) {
+      console.log(error)
+      Alert.alert("Erro", "Não foi possível filtrar os itens.")
+    }
+  }
+
+  useEffect(() => {
+    getItems()
+  }, [])
 
   return (
     <View style={styles.container}>
@@ -44,7 +62,7 @@ export function Home() {
           placeholder="O que você precisa comprar?"
           onChangeText={setDescription}
         />
-        <Button title="Adicionar" onPress={handleAddItem} />
+        <Button title="Adicionar" onPress={handleAdd} />
       </View>
 
       <View style={styles.content}>
@@ -82,5 +100,5 @@ export function Home() {
         />
       </View>
     </View>
-  );
+  )
 }
