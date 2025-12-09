@@ -36,12 +36,16 @@ export function Home() {
     }
 
     await itemsStorage.add(newItem)
-    await getItems()
+    await itemsByStatus()
+
+    Alert.alert("Adicionado", `${description} adicionado com sucesso!`)
+    setFilter(FilterStatus.PENDING)
+    setDescription("")
   }
 
-  async function getItems() {
+  async function itemsByStatus() {
     try {
-      const response = await itemsStorage.get()
+      const response = await itemsStorage.getByStatus(filter)
       setItems(response)
     } catch (error) {
       console.log(error)
@@ -50,8 +54,8 @@ export function Home() {
   }
 
   useEffect(() => {
-    getItems()
-  }, [])
+    itemsByStatus()
+  }, [filter])
 
   return (
     <View style={styles.container}>
@@ -61,6 +65,7 @@ export function Home() {
         <Input
           placeholder="O que você precisa comprar?"
           onChangeText={setDescription}
+          value={description}
         />
         <Button title="Adicionar" onPress={handleAdd} />
       </View>
