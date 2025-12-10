@@ -38,7 +38,7 @@ export function Home() {
     await itemsStorage.add(newItem)
     await itemsByStatus()
 
-    Alert.alert("Adicionado", `${description} adicionado com sucesso!`)
+    Alert.alert("Sucesso!", "Item adicionado: " + description)
     setFilter(FilterStatus.PENDING)
     setDescription("")
   }
@@ -60,6 +60,29 @@ export function Home() {
     } catch (error) {
       console.log(error)
       Alert.alert("Erro", `Não foi possível remover o item  ${id}`)
+    }
+  }
+
+  function HandleClear() {
+    Alert.alert("Limpar", "Deseja remover todos os itens?", [
+      {
+        text: "Não",
+        style: "cancel",
+      },
+      {
+        text: "Sim",
+        onPress: async () => onClear(),
+      },
+    ])
+  }
+
+  async function onClear() {
+    try {
+      await itemsStorage.clear()
+      setItems([])
+    } catch (error) {
+      console.log(error)
+      Alert.alert("Erro", "Não foi possível remover todos os itens.")
     }
   }
 
@@ -91,7 +114,7 @@ export function Home() {
             />
           ))}
 
-          <TouchableOpacity style={styles.clearButton}>
+          <TouchableOpacity style={styles.clearButton} onPress={HandleClear}>
             <Text style={styles.clearText}>Limpar</Text>
           </TouchableOpacity>
         </View>
